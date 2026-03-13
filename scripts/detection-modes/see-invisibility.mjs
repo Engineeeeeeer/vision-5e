@@ -34,46 +34,6 @@ export default class DetectionModeSeeInvisibility extends DetectionMode {
 
     /** @override */
     _testPoint(visionSource, mode, target, test) {
-        if (!super._testPoint(visionSource, mode, target, test)) {
-            return false;
-        }
-
-        const visionSources = canvas.effects.visionSources;
-
-        canvas.effects.visionSources = new foundry.utils.Collection();
-        canvas.effects.visionSources.set(visionSource.sourceId, visionSource);
-
-        const detectionModes = visionSource.object.document.detectionModes;
-        const detectionLevel = target._detectionLevel;
-
-        target._detectionLevel = DETECTION_LEVELS.NONE;
-
-        visionSource.object.document.detectionModes = detectionModes.filter(
-            ({ id }) => {
-                const mode = CONFIG.Canvas.detectionModes[id];
-
-                return mode && mode !== this && mode.type === DetectionMode.DETECTION_TYPES.SIGHT && !mode.imprecise;
-            },
-        );
-
-        const wasInvisible = target.document.actor.statuses.delete(CONFIG.specialStatusEffects.INVISIBLE);
-        const wasEthereal = target.document.actor.statuses.delete(CONFIG.specialStatusEffects.ETHEREAL);
-
-        // Test whether this vision source sees the target without the invisible and ethereal status effect
-        const result = canvas.visibility.testVisibility(test.point, { tolerance: 0, object: target });
-
-        if (wasInvisible) {
-            target.document.actor.statuses.add(CONFIG.specialStatusEffects.INVISIBLE);
-        }
-
-        if (wasEthereal) {
-            target.document.actor.statuses.add(CONFIG.specialStatusEffects.ETHEREAL);
-        }
-
-        target._detectionLevel = detectionLevel;
-        visionSource.object.document.detectionModes = detectionModes;
-        canvas.effects.visionSources = visionSources;
-
-        return result;
+        return super._testPoint(visionSource, mode, target, test)
     }
 }
