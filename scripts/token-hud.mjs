@@ -11,8 +11,9 @@ export default (TokenHUD) => class extends TokenHUD {
         const result = await super._renderHTML(context, options);
 
         const visionModes = this.#getSelectableVisionModes();
+        const isVisionModeOverridden = foundry.utils.hasProperty(this.document.overrides ?? {}, "sight.visionMode");
 
-        if (visionModes.length > 1) {
+        if (visionModes.length > 1 && !isVisionModeOverridden) {
             const button = document.createElement("button");
 
             button.classList.add("control-icon");
@@ -23,7 +24,7 @@ export default (TokenHUD) => class extends TokenHUD {
 
             const i = document.createElement("i");
 
-            i.classList.add("fa-solid", "fa-eye");
+            i.classList.add("fa-solid", game.release.generation >= 14 ? "fa-glasses" : "fa-eye");
             i.inert = true;
 
             button.append(i);
@@ -74,7 +75,9 @@ export default (TokenHUD) => class extends TokenHUD {
             ["devilsSight", "devilsSight"],
             ["truesight", "seeAll"],
         ]) {
-            if (this.document.detectionModes.some((mode) => mode.id === detectionModeId && mode.enabled && mode.range > 0)) {
+            const mode = this.document._getDetectionMode(detectionModeId);
+
+            if (mode && mode.enabled && mode.range > 0) {
                 visionModes.push(CONFIG.Canvas.visionModes[visionModeId]);
             }
         }
