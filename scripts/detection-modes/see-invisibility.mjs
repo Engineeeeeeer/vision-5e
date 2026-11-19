@@ -1,5 +1,4 @@
 import DetectionMode from "./base.mjs";
-import { DETECTION_LEVELS } from "../const.mjs";
 
 const { Token } = foundry.canvas.placeables;
 
@@ -30,10 +29,5 @@ export default class DetectionModeSeeInvisibility extends DetectionMode {
         return !visionSource.object.document.hasStatusEffect(CONFIG.specialStatusEffects.DEFEATED)
             && target instanceof Token && (target.document.hasStatusEffect(CONFIG.specialStatusEffects.INVISIBLE)
                 || target.document.hasStatusEffect(CONFIG.specialStatusEffects.ETHEREAL));
-    }
-
-    /** @override */
-    _testPoint(visionSource, mode, target, test) {
-        return super._testPoint(visionSource, mode, target, test)
     }
 }

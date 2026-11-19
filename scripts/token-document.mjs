@@ -2,6 +2,16 @@ import { convertUnits, fromFeet } from "./utils.mjs";
 
 export default (TokenDocument) => class extends TokenDocument {
     /** @override */
+    prepareData() {
+        super.prepareData();
+
+        if (game.release.generation >= 14) {
+            // Token Active Effects can add partial detection modes after prepareBaseData.
+            this.#prepareDetectionModeDefaults();
+        }
+    }
+
+    /** @override */
     prepareDerivedData() {
         super.prepareDerivedData();
 
@@ -16,10 +26,7 @@ export default (TokenDocument) => class extends TokenDocument {
             return;
         }
 
-        for (const [_id, mode] of this._getDetectionModes()) {
-            mode.enabled ??= true;
-            mode.range ??= Infinity;
-        }
+        this.#prepareDetectionModeDefaults();
 
         const sceneUnits = this.parent?.grid.units || "";
 
@@ -43,6 +50,13 @@ export default (TokenDocument) => class extends TokenDocument {
             for (const [_id, mode] of this._getDetectionModes()) {
                 mode.range = Math.min(mode.range, maxRange);
             }
+        }
+    }
+
+    #prepareDetectionModeDefaults() {
+        for (const [_id, mode] of this._getDetectionModes()) {
+            mode.enabled ??= true;
+            mode.range ??= Infinity;
         }
     }
 
